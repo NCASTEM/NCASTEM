@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NCASTEM-2025 | Curtain Reveal</title>
   <style>
-    /* ===== Base Styles ===== */
     * {
       margin: 0;
       padding: 0;
@@ -16,7 +15,7 @@
       height: 100vh;
       width: 100vw;
       overflow: hidden;
-      background: radial-gradient(circle at center, #001219, #003049, #001219);
+      background: radial-gradient(circle at center, #001219, #003049, #000814);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -24,7 +23,7 @@
       color: #ffffff;
     }
 
-    /* ===== Stage & Curtains ===== */
+    /* ===== Stage ===== */
     .stage {
       position: relative;
       width: 100%;
@@ -32,59 +31,20 @@
       overflow: hidden;
     }
 
-    .curtain {
+    /* ===== SVG Canvas for Realistic Curtains ===== */
+    svg {
       position: absolute;
       top: 0;
-      width: 50%;
-      height: 100%;
-      z-index: 2;
-      transition: transform 2.5s ease-in-out;
-      background: linear-gradient(
-        135deg,
-        #003049 0%,
-        #005f73 25%,
-        #0a9396 70%,
-        #001219 100%
-      );
-      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.6);
-      background-size: 400% 400%;
-      animation: waveMotion 6s ease-in-out infinite;
-    }
-
-    @keyframes waveMotion {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    .left-curtain {
       left: 0;
-      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      width: 100%;
+      height: 100%;
+      z-index: 3;
     }
 
-    .right-curtain {
-      right: 0;
-      border-left: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .stage.open .left-curtain {
-      transform: translateX(-100%);
-    }
-
-    .stage.open .right-curtain {
-      transform: translateX(100%);
-    }
-
-    /* ===== Center Text ===== */
+    /* ===== Center Content ===== */
     .content {
       position: absolute;
-      z-index: 1;
+      z-index: 2;
       top: 0;
       left: 0;
       width: 100%;
@@ -94,40 +54,31 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      letter-spacing: 1px;
-      color: #e0fbfc;
     }
 
     .content h1 {
-      font-size: 64px;
+      font-size: 72px;
       font-weight: 800;
-      color: #00b4d8;
+      text-transform: uppercase;
+      letter-spacing: 3px;
       background: linear-gradient(90deg, #00b4d8, #48cae4, #90e0ef);
       -webkit-background-clip: text;
-      background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-transform: uppercase;
-      letter-spacing: 2px;
       animation: fadeIn 2s ease-in-out;
+      text-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
     }
 
     .content h2 {
-      font-weight: 400;
+      font-size: 22px;
       color: #caf0f8;
-      margin-top: 12px;
-      font-size: 20px;
+      margin-top: 10px;
       animation: fadeIn 3s ease-in-out;
+      text-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* ===== Button ===== */
@@ -136,44 +87,102 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 3;
-      padding: 14px 40px;
+      z-index: 5;
+      padding: 16px 48px;
       border: none;
-      border-radius: 12px;
+      border-radius: 50px;
       background: linear-gradient(90deg, #00b4d8, #0077b6);
       color: #ffffff;
       font-size: 18px;
       font-weight: 600;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
       cursor: pointer;
-      box-shadow: 0 0 30px rgba(0, 183, 255, 0.5);
+      box-shadow: 0 0 40px rgba(0, 183, 255, 0.5);
       transition: all 0.3s ease;
+      animation: pulse 2.5s infinite ease-in-out;
     }
 
     #inaugurateButton:hover {
       transform: translate(-50%, -50%) scale(1.05);
-      box-shadow: 0 0 50px rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 60px rgba(0, 255, 255, 0.8);
     }
 
     #inaugurateButton.hidden {
       display: none;
     }
 
-    /* ===== Glow Pulse Animation ===== */
     @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 20px rgba(0, 183, 255, 0.5); }
-      50% { box-shadow: 0 0 50px rgba(0, 255, 255, 0.7); }
-    }
-
-    #inaugurateButton {
-      animation: pulse 2.5s infinite ease-in-out;
+      0%, 100% { box-shadow: 0 0 25px rgba(0, 183, 255, 0.4); }
+      50% { box-shadow: 0 0 50px rgba(0, 255, 255, 0.6); }
     }
   </style>
 </head>
+
 <body>
   <div class="stage" id="stage">
-    <div class="curtain left-curtain"></div>
-    <div class="curtain right-curtain"></div>
+    <svg id="curtainSvg" preserveAspectRatio="none" viewBox="0 0 100 100">
+      <defs>
+        <!-- Fabric gradient with depth -->
+        <linearGradient id="leftGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#004f5e;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#007b8a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#003049;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="rightGrad" x1="100%" y1="0%" x2="0%" y2="0%">
+          <stop offset="0%" style="stop-color:#004f5e;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#007b8a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#003049;stop-opacity:1" />
+        </linearGradient>
+
+        <!-- Shadow masks for depth -->
+        <filter id="clothShadow">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.4"/>
+          </feComponentTransfer>
+        </filter>
+      </defs>
+
+      <!-- Left Curtain with wavy bottom and folds -->
+      <g id="leftCurtain" clip-path="url(#leftClip)">
+        <!-- Main curtain body -->
+        <path id="leftPath" d="M 0,0 L 50,0 L 50,100 Q 48,95 46,100 Q 44,90 42,100 Q 40,93 38,100 Q 36,96 34,100 Q 32,91 30,100 Q 28,94 26,100 Q 24,92 22,100 Q 20,95 18,100 Q 16,89 14,100 Q 12,97 10,100 Q 8,93 6,100 Q 4,91 2,100 Q 0,95 0,100 Z" 
+              fill="url(#leftGrad)" />
+        
+        <!-- Fold shadows for realism -->
+        <path d="M 48,0 Q 48,30 47,60 Q 46,80 45,100" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M 42,0 Q 42,25 41,60 Q 40,85 39,100" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M 36,0 Q 36,35 35,65 Q 34,82 33,100" stroke="rgba(0,0,0,0.12)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M 30,0 Q 30,28 29,58 Q 28,80 27,100" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M 24,0 Q 24,32 23,62 Q 22,85 21,100" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M 18,0 Q 18,26 17,60 Q 16,82 15,100" stroke="rgba(0,0,0,0.11)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M 12,0 Q 12,30 11,65 Q 10,83 9,100" stroke="rgba(0,0,0,0.13)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M 6,0 Q 6,27 5,60 Q 4,81 3,100" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+        <!-- Highlight for fabric shine -->
+        <path d="M 2,0 L 2,50 Q 3,70 2,100" stroke="rgba(255,255,255,0.08)" stroke-width="0.8" fill="none"/>
+      </g>
+
+      <!-- Right Curtain with wavy bottom and folds -->
+      <g id="rightCurtain">
+        <!-- Main curtain body -->
+        <path id="rightPath" d="M 100,0 L 50,0 L 50,100 Q 52,95 54,100 Q 56,90 58,100 Q 60,93 62,100 Q 64,96 66,100 Q 68,91 70,100 Q 72,94 74,100 Q 76,92 78,100 Q 80,95 82,100 Q 84,89 86,100 Q 88,97 90,100 Q 92,93 94,100 Q 96,91 98,100 Q 100,95 100,100 Z"
+              fill="url(#rightGrad)" />
+        
+        <!-- Fold shadows for realism -->
+        <path d="M 52,0 Q 52,30 53,60 Q 54,80 55,100" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M 58,0 Q 58,25 59,60 Q 60,85 61,100" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M 64,0 Q 64,35 65,65 Q 66,82 67,100" stroke="rgba(0,0,0,0.12)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M 70,0 Q 70,28 71,58 Q 72,80 73,100" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M 76,0 Q 76,32 77,62 Q 78,85 79,100" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M 82,0 Q 82,26 83,60 Q 84,82 85,100" stroke="rgba(0,0,0,0.11)" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M 88,0 Q 88,30 89,65 Q 90,83 91,100" stroke="rgba(0,0,0,0.13)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M 94,0 Q 94,27 95,60 Q 96,81 97,100" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+        <!-- Highlight for fabric shine -->
+        <path d="M 98,0 L 98,50 Q 97,70 98,100" stroke="rgba(255,255,255,0.08)" stroke-width="0.8" fill="none"/>
+      </g>
+    </svg>
 
     <div class="content">
       <h1>NCASTEM - 2025</h1>
@@ -184,14 +193,31 @@
   </div>
 
   <script>
+    const svg = document.getElementById('curtainSvg');
+    let isOpen = false;
+
     function openCurtains() {
-      document.getElementById("stage").classList.add("open");
-      document.getElementById("inaugurateButton").classList.add("hidden");
+      if (isOpen) return;
+      isOpen = true;
+      
+      const button = document.getElementById("inaugurateButton");
+      button.classList.add("hidden");
+
+      const leftCurtain = document.getElementById("leftCurtain");
+      const rightCurtain = document.getElementById("rightCurtain");
+
+      // Animate left curtain moving left
+      leftCurtain.style.transition = "transform 2.8s cubic-bezier(0.7, 0, 0.3, 1)";
+      leftCurtain.style.transform = "translateX(-110%)";
+
+      // Animate right curtain moving right
+      rightCurtain.style.transition = "transform 2.8s cubic-bezier(0.7, 0, 0.3, 1)";
+      rightCurtain.style.transform = "translateX(110%)";
 
       // Redirect after animation finishes
       setTimeout(() => {
         window.location.href = "https://sites.google.com/view/tjit-ncastem-2025/home";
-      }, 3000); // matches curtain animation duration
+      }, 1500);
     }
   </script>
 </body>
